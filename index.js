@@ -1,0 +1,41 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const { Readability } = require('@mozilla/readability');
+const { JSDOM } = require('jsdom');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.raw());
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.post('/api/readability', (req, res) => {
+  if (!req.body.hasOwnProperty('article') || !req.body.hasOwnProperty('url')) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  if (typeof req.body.article !== 'string' || typeof req.body.url !== 'string') {
+    return res.status(400).json({ error: 'Invalid field types' });
+  }
+
+  const doc = new JSDOM(req.body.article, {
+    url: req.body.url
+  });
+  const reader = new Readability(doc.window.document, {
+    debug: false,
+  });
+  const article = reader.parse();
+
+  res.send(article);
+});
+
+const port = 9000
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+
