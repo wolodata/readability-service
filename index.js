@@ -25,6 +25,16 @@ app.post('/api/readability', (req, res) => {
   const doc = new JSDOM(req.body.article, {
     url: req.body.url
   });
+
+  if (req.body.removeImages) {
+    const images = doc.window.document.querySelectorAll('img', 'picture', 'svg', 'canvas');
+    images.forEach((image) => {
+      if (image.parentNode) {
+        image.parentNode.removeChild(image);
+      }
+    });
+  }
+
   const reader = new Readability(doc.window.document, {
     debug: false,
   });
@@ -38,4 +48,3 @@ const port = 9000
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
-
