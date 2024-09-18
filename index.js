@@ -5,9 +5,9 @@ const { JSDOM } = require('jsdom');
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(bodyParser.raw());
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.raw({ limit: '10mb' }));
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
